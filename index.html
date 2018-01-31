@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html ng-app="MapGen">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <script src="angular.min.js"></script>
+        <script src="perlin.js" type="text/javascript"></script>
+        
+        <style type="text/css">
+            body {
+                color: #00ff00;
+                font-family: arial;
+                background-color: #000000;
+            }
+            .field {
+                margin-bottom: 10px;
+                
+            }
+            
+            .field label {
+                display: block;
+            }
+
+            .field input {
+                width: 320px;
+            }
+            
+            #settings {
+                position: absolute;
+                right: 5px;
+                top: 5px;
+                border: solid 1px white;
+                padding: 16px;
+                background-color: #2d2d2d
+            }
+            
+            canvas {
+                border: solid 1px #be0027;
+            }
+        </style>
+    </head>
+    <body ng-controller="Canvas">
+        <canvas id="noise" width="{{Map.width}}" height="{{Map.height}}"></canvas>
+        <div id="settings">
+            <div class="field">
+                <label>Function</label>
+                <select ng-model="Map.func" ng-change="Map.generate();">
+                    <option value="abs">Math.abs</option>
+                    <option value="map">map(v, r1, r1, t1, t2)</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>CanvasWidth: {{Map.width}}</label>
+                <input type="range" min="10" max="1600" step="10" ng-model="Map.width" ng-mouseup="Map.generate();" value="{{Map.width}}" />
+            </div>
+            <div class="field">
+                <label>CanvasHeight: {{Map.height}}</label>
+                <input type="range" min="10" max="900" step="10" ng-model="Map.height" ng-mouseup="Map.generate();" value="{{Map.height}}" />
+            </div>
+            
+            
+            <div class="field">
+                <label>NoiseWidth: {{Map.noiseWidth}}</label>
+                <input type="range" min="1" max="500" step="1" ng-model="Map.noiseWidth" ng-change="Map.generate();" value="{{Map.noiseWidth}}" />
+            </div>
+            <div class="field">
+                <label>NoiseHeight: {{Map.noiseHeight}}</label>
+                <input type="range" min="1" max="500" step="1" ng-model="Map.noiseHeight" ng-change="Map.generate();" value="{{Map.noiseHeight}}" />
+            </div>
+            
+            <div class="field">
+                <label>Water Line: {{Map.waterLine}}</label>
+                <input type="range" min="1" max="250" step="1" ng-model="Map.waterLine" ng-change="Map.generate();" value="{{Map.waterLine}}" />
+            </div>
+            <div class="field">
+                <label>Some Value: {{Map.someValue}}</label>
+                <input type="range" min="1" max="16" step="1" ng-model="Map.someValue" ng-change="Map.generate();" value="{{Map.someValue}}" />
+            </div>
+            <div class="field">
+                <label>Top Value: {{Map.top}}</label>
+                <input type="range" min="1" max="255" step="1" ng-model="Map.top" ng-change="Map.generate();" value="{{Map.top}}" />
+            </div>
+            
+            <div class="field">
+                <button ng-click="Map.generate();">Generate</button>
+                <button ng-click="Map.newSeed(); Map.generate();">Generate New Seed</button>
+            </div>
+        </div>
+        
+        
+        <script src="app.js" type="text/javascript"></script>
+    </body>
+</html>
