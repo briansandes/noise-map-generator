@@ -16,6 +16,20 @@ var Canvas = MapGen.controller('Canvas', ['$scope', '$timeout', function ($scope
             seed: null,
             func: 'abs',
             top: 255,
+            makeMap: true,
+            foodTolerance: 48,
+            waterTolerance: 150,
+            tiles: {
+                dirt: {
+                    colors: [155, 118, 83]
+                },
+                food: {
+                    colors: [0, 150, 12]
+                },
+                water: {
+                    colors: [64, 164, 220]
+                }
+            },
             canvas: document.getElementById('noise'),
             generate: function () {
                 var context = this.canvas.getContext('2d');
@@ -27,7 +41,7 @@ var Canvas = MapGen.controller('Canvas', ['$scope', '$timeout', function ($scope
                     this.newSeed();
                 }
 
-                // looping
+                // setting methods inside loop
                 if (this.func === 'abs') {
                     var applyFunction = function (value, top) {
                         return Math.round(Math.abs(value) * top);
@@ -39,6 +53,35 @@ var Canvas = MapGen.controller('Canvas', ['$scope', '$timeout', function ($scope
                     };
                 }
 
+                // setting methods inside loop
+                if (this.makeMap === true) {
+                    var getColors = function (value) {
+
+                        let colorValue = value + Math.max(0, ($scope.Map.waterLine - value) * $scope.Map.someValue);
+
+                        // dirt
+                        if (colorValue < $scope.Map.foodTolerance && value < $scope.Map.foodTolerance) {
+                            return $scope.Map.tiles.dirt.colors;
+                        } else
+                        // food
+                        if (colorValue >= $scope.Map.foodTolerance && colorValue < $scope.Map.waterTolerance &&
+                                value >= $scope.Map.foodTolerance && value < $scope.Map.waterTolerance) {
+                            return $scope.Map.tiles.food.colors;
+                        } else
+                        // water
+                        if (colorValue >= $scope.Map.waterTolerance) {
+                            return $scope.Map.tiles.water.colors;
+                        } else {
+                            return $scope.Map.tiles.dirt.colors;
+                        }
+                    };
+                } else
+                if (this.makeMap === false) {
+                    var getColors = function (value) {
+                        return [value + Math.max(0, ($scope.Map.waterLine - value) * $scope.Map.someValue), value, value];
+                    };
+                }
+
                 for (let y = 0; y < this.height; y++) {
                     for (let x = 0; x < this.width; x++) {
                         // generating noise for current coords
@@ -46,61 +89,16 @@ var Canvas = MapGen.controller('Canvas', ['$scope', '$timeout', function ($scope
 
                         // getting its absolute value, times 255 to get a byte color value
                         value = applyFunction(value, this.top);
+                        let colors = getColors(value);
 
-                        var cell = (x + y * this.width) * 4;
-                        image.data[cell] = image.data[cell + 1] = image.data[cell + 2] = value;
-                        image.data[cell] += Math.max(0, (this.waterLine - value) * this.someValue);
+                        var cell = (x + (y * this.width)) * 4;
+
+                        image.data[cell] = colors[0]; // r
+                        image.data[cell + 1] = colors[1]; // g
+                        image.data[cell + 2] = colors[2]; // b
                         image.data[cell + 3] = 255; // alpha
                     }
                 }
-
-
-
-                /* TODO MODIFY THIS */
-                food_tolerance = 48;
-
-                water_tolerance = 150;
-
-                for (var i = 0; i < image.data.length; i++) {
-                    // is red 
-                    if (i % 4 === 0) {
-                        // is land
-                        if (image.data[i] < food_tolerance && image.data[i + 1] < food_tolerance) {
-                            image.data[i] = 155;
-                            image.data[i + 1] = 118;
-                            image.data[i + 2] = 83;
-                            image.data[i + 3] = 255;
-                        } else
-                        // is food
-                        if (image.data[i] > food_tolerance && image.data[i] < water_tolerance &&
-                                image.data[i + 1] > food_tolerance && image.data[i + 1] < water_tolerance) {
-
-                            food_amount = image.data[i] - food_tolerance;
-                            food_max = water_tolerance - food_tolerance;
-
-                            food_magn = food_amount / food_max;
-
-                            image.data[i] = 155 - (155 * food_magn);
-                            image.data[i + 1] = 118 + (32 * food_magn);
-                            image.data[i + 2] = 82 - (70 * food_magn);
-                            image.data[i + 3] = 255;
-                        } else
-                        // is water
-                        if (image.data[i] > water_tolerance) {
-                            image.data[i] = 64;
-                            image.data[i + 1] = 164;
-                            image.data[i + 2] = 223;
-                            image.data[i + 3] = 255;
-                        } else {
-                            // land
-                            image.data[i] = 155;
-                            image.data[i + 1] = 118;
-                            image.data[i + 2] = 82;
-                            image.data[i + 3] = 255;
-                        }
-                    }
-                }
-                /* TODO MODIFY THIS */
 
                 context.putImageData(image, 0, 0);
             },

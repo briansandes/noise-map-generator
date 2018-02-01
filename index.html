@@ -26,8 +26,13 @@ and open the template in the editor.
                 display: block;
             }
 
-            .field input {
+            .field input[type="range"] {
                 width: 320px;
+            }
+            
+            .field input[type="range"].half {
+                width: 150px;
+                margin-right: 5px;
             }
             
             #settings {
@@ -79,11 +84,28 @@ and open the template in the editor.
             </div>
             <div class="field">
                 <label>Some Value: {{Map.someValue}}</label>
-                <input type="range" min="1" max="16" step="1" ng-model="Map.someValue" ng-change="Map.generate();" value="{{Map.someValue}}" />
+                <input type="range" min="-16" max="16" step="1" ng-model="Map.someValue" ng-change="Map.generate();" value="{{Map.someValue}}" />
             </div>
             <div class="field">
                 <label>Top Value: {{Map.top}}</label>
                 <input type="range" min="1" max="255" step="1" ng-model="Map.top" ng-change="Map.generate();" value="{{Map.top}}" />
+            </div>
+            <hr>
+            
+            
+            <div class="field">
+                <label>Food color tolerance: {{Map.foodTolerance}}</label>
+                <input type="range" min="1" max="255" step="1" ng-model="Map.foodTolerance" ng-change="Map.generate();" value="{{Map.foodTolerance}}" />
+            </div>
+            
+            <div class="field">
+                <label>Water color tolerance:  {{Map.waterTolerance}}</label>
+                <input type="range" min="1" max="255" step="1" ng-model="Map.waterTolerance" ng-change="Map.generate();" value="{{Map.waterTolerance}}" />
+            </div>
+            
+            <hr>
+            <div class="field">
+                <label><input type="checkbox" ng-model="Map.makeMap" ng-change="Map.generate();" /> Generate Map</label>
             </div>
             
             <div class="field">
