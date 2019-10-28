@@ -5,20 +5,20 @@ var Canvas = MapGen.controller('Canvas', ['$scope', '$timeout', function ($scope
             return ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2;
         }
 
-
         $scope.Map = {
-            width: 800,
-            height: 450,
-            noiseWidth: 100,
-            noiseHeight: 100,
-            waterLine: 50,
+            scale: 5,
+            width: 240,
+            height: 160,
+            noiseWidth: 70,
+            noiseHeight: 50,
+            waterLine: 48,
             someValue: 4,
             seed: null,
             func: 'abs',
-            top: 255,
+            top: 160,
             makeMap: true,
-            foodTolerance: 48,
-            waterTolerance: 150,
+            foodTolerance: 70,
+            waterTolerance: 155,
             tiles: {
                 dirt: {
                     colors: [155, 118, 83]
@@ -30,9 +30,10 @@ var Canvas = MapGen.controller('Canvas', ['$scope', '$timeout', function ($scope
                     colors: [64, 164, 220]
                 }
             },
-            canvas: document.getElementById('noise'),
+            map: document.getElementById('noise'),
+            screenCanvas: document.getElementById('map'),
             generate: function () {
-                var context = this.canvas.getContext('2d');
+                var context = this.map.getContext('2d');
 
                 // gets image data
                 var image = context.getImageData(0, 0, this.width, this.height);
@@ -100,7 +101,13 @@ var Canvas = MapGen.controller('Canvas', ['$scope', '$timeout', function ($scope
                     }
                 }
 
+                
                 context.putImageData(image, 0, 0);
+                
+                var screenContext = this.screenCanvas.getContext('2d');
+                screenContext.imageSmoothingEnabled = false;
+                
+                screenContext.drawImage(this.map, 0, 0, this.width * this.scale, this.height * this.scale);
             },
             delayGen: function () {
                 $timeout(function () {
