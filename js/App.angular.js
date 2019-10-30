@@ -21,7 +21,6 @@ var MapGenCtrl = MapGen.controller('MapGenCtrl', ['$scope', '$timeout', function
             noiseCanvas: document.getElementById('noise'),
             screenCanvas: document.getElementById('map'),
             generate: function () {
-
                 if (!this.params.seed) {
                     this.newSeed();
                 }
@@ -61,6 +60,10 @@ var MapGenCtrl = MapGen.controller('MapGenCtrl', ['$scope', '$timeout', function
                     //this.seed++;
                 }
             },
+            
+            reset: function() {
+                this.params = Object.assign({}, NoiseMap.defaultParams);
+            },
             export: function() {
                 this.exportedData = JSON.stringify({
                     params: this.params,
@@ -69,6 +72,8 @@ var MapGenCtrl = MapGen.controller('MapGenCtrl', ['$scope', '$timeout', function
                 this.exported = true;
             }
         };
+        
+        $scope.Map.params = Object.assign({}, NoiseMap.defaultParams);
 
         $timeout(function () {
             $scope.Map.generate();

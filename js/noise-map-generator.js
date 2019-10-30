@@ -88,7 +88,7 @@ var NoiseMap = {
         }
     },
     generate: function (o) {
-        this.params = Object.assign({}, o ? o : {}, this.defaultParams);
+        this.params = Object.assign({}, this.defaultParams, o ? o : {});
 
         if (!this.params.seed) {
             this.newSeed();
