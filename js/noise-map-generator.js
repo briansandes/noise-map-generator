@@ -15,7 +15,6 @@ var NoiseMap = {
         noiseHeight: 50,
         waterLine: 48,
         someValue: 4,
-        seed: null,
         func: 'abs',
         top: 160,
         makeMap: true,
@@ -29,7 +28,6 @@ var NoiseMap = {
         noiseHeight: 50,
         waterLine: 48,
         someValue: 4,
-        seed: null,
         func: 'abs',
         top: 160,
         makeMap: true,
@@ -84,17 +82,18 @@ var NoiseMap = {
     },
     newSeed: function () {
         // generates odd seed
-        this.seed = Math.floor(Math.random() * 10000);
-        if (this.seed % 2 === 1) {
+        this.params.seed = Math.floor(Math.random() * 10000);
+        if (this.params.seed % 2 === 1) {
             //this.seed++;
         }
     },
-    generate: function (params) {
-        this.params = params ? params : this.defaultParams ;
+    generate: function (o) {
+        this.params = Object.assign({}, o ? o : {}, this.defaultParams);
 
         if (!this.params.seed) {
             this.newSeed();
         }
+        
         noise.seed(this.params.seed);
 
         // setting methods inside loop
