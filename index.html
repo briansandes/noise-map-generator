@@ -5,185 +5,104 @@
         <meta charset="UTF-8">
         <title></title>
         <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
+        <link href="css/bootstrap.css" rel="stylesheet">
+        <link href="css/noise.css" rel="stylesheet">
 
-        <script src="angular.min.js"></script>
-        <script src="perlin.js" type="text/javascript"></script>
+        <script src="js/lib/angular.min.js"></script>
+        <script src="js/lib/perlin.js" type="text/javascript"></script>
+        <script src="js/lib/Mapacker.js" type="text/javascript"></script>
+        
+        <script src="js/noise-map-generator.js" type="text/javascript"></script>
+        <script src="js/App.angular.js" type="text/javascript"></script>
 
-        <style type="text/css">
-            * {
-                -webkit-box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-            }
-            
-            :root {
-                --blue: #1c1a9a;
-            }
 
-            body {
-                color: #ffffff;
-                font-family: 'Press Start 2P';
-                background-color: var(--blue);
-            }
-            .field {
-                margin-bottom: 10px;
-
-            }
-
-            .field label {
-                display: block;
-                font-size: 14px;
-                color: white;
-                text-shadow: 3px 3px 0 black;
-                margin-bottom: 5px;
-            }
-
-            .field input[type="range"] {
-                width: 320px;
-            }
-
-            .field input[type="range"].half {
-                width: 150px;
-                margin-right: 5px;
-            }
-
-            .that-DOSish-look {
-                -webkit-box-shadow: 0 0 0 5px, 8px 8px 0 4px black;
-                -moz-box-shadow: 0 0 0 5px, 8px 8px 0 4px black;
-                box-shadow: 0 0 0 5px, 8px 8px 0 4px black;
-                font-size: 0px;
-                background-color: #0000c1;
-                color: #bbbbbb;
-            }
-
-            #settings {
-                position: absolute;
-                right: 10px;
-                top: 10px;
-                padding: 16px;
-            }
-
-            canvas {
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                border: solid 2px black;
-            }
-
-            select {
-                font-family: 'Press Start 2P';
-                height: 24px;
-                font-size: 12px;
-                margin-top: 10px;
-                margin-bottom: 10px;
-            }
-
-            option {
-                padding-top: 2px;
-                padding-bottom: 2px;
-                line-height: 18px;
-            }
-
-            hr {
-                margin-bottom: 20px;
-                border-top: solid 2px #cccccc;
-                border-bottom: solid 2px black;
-                border-left: none;
-                border-right: none;
-            }
-
-            button {
-                background-color: #2623ff;
-                color: white;
-                border: none;
-                font-family: 'Press Start 2P';
-                padding: 10px 10px;
-                font-size: 12px;
-                margin: 8px 8px;
-                box-shadow: 3px 3px 0px rgba(0, 0, 0, 1);
-                cursor: pointer;
-                display: inline-block;
-            }
-        </style>
     </head>
-    <body ng-controller="Canvas">
-        <canvas id="noise" width="{{Map.width}}" height="{{Map.height}}" style="display: none;"></canvas>
-
-        <canvas id="map" class="that-DOSish-look" width="{{Map.width * Map.scale}}" height="{{Map.height * Map.scale}}"></canvas>
+    <body ng-controller="MapGenCtrl">
+        <canvas id="noise" style="display: none;" width="{{Map.params.width}}" height="{{Map.params.height}}"></canvas>
+        <canvas id="map" class="that-DOSish-look" width="{{Map.params.width * Map.scale}}" height="{{Map.params.height * Map.scale}}"></canvas>
+        
         <div id="settings" class="that-DOSish-look">
             <div class="field">
                 <label>Function:</label>
-                <select ng-model="Map.func" ng-change="Map.generate();">
+                <select ng-model="Map.params.func" ng-change="Map.generate();">
                     <option value="abs">Math.abs</option>
                     <option value="map">map(v, r1, r1, t1, t2)</option>
                 </select>
             </div>
             <div class="field">
-                <label>Map width: {{Map.width}}</label>
-                <input type="range" min="10" max="1600" step="10" ng-model="Map.width" ng-mouseup="Map.generate();" value="{{Map.width}}" />
+                <label>Map width: {{Map.params.width}}</label>
+                <input type="range" min="10" max="1600" step="10" ng-model="Map.params.width" ng-mouseup="Map.generate();" value="{{Map.params.width}}" />
             </div>
             <div class="field">
-                <label>Map height: {{Map.height}}</label>
-                <input type="range" min="10" max="900" step="10" ng-model="Map.height" ng-mouseup="Map.generate();" value="{{Map.height}}" />
-            </div>
-
-
-            <div class="field">
-                <label>Noise width: {{Map.noiseWidth}}</label>
-                <input type="range" min="1" max="500" step="1" ng-model="Map.noiseWidth" ng-change="Map.generate();" value="{{Map.noiseWidth}}" />
-            </div>
-            <div class="field">
-                <label>Noise height: {{Map.noiseHeight}}</label>
-                <input type="range" min="1" max="500" step="1" ng-model="Map.noiseHeight" ng-change="Map.generate();" value="{{Map.noiseHeight}}" />
+                <label>Map height: {{Map.params.height}}</label>
+                <input type="range" min="10" max="900" step="10" ng-model="Map.params.height" ng-mouseup="Map.generate();" value="{{Map.params.height}}" />
             </div>
 
+
             <div class="field">
-                <label>Water Line: {{Map.waterLine}}</label>
-                <input type="range" min="1" max="250" step="1" ng-model="Map.waterLine" ng-change="Map.generate();" value="{{Map.waterLine}}" />
+                <label>Noise width: {{Map.params.noiseWidth}}</label>
+                <input type="range" min="1" max="500" step="1" ng-model="Map.params.noiseWidth" ng-change="Map.generate();" value="{{Map.params.noiseWidth}}" />
             </div>
             <div class="field">
-                <label>Some random value: {{Map.someValue}}</label>
-                <input type="range" min="-16" max="16" step="1" ng-model="Map.someValue" ng-change="Map.generate();" value="{{Map.someValue}}" />
+                <label>Noise height: {{Map.params.noiseHeight}}</label>
+                <input type="range" min="1" max="500" step="1" ng-model="Map.params.noiseHeight" ng-change="Map.generate();" value="{{Map.params.noiseHeight}}" />
+            </div>
+
+            <div class="field">
+                <label>Water Line: {{Map.params.waterLine}}</label>
+                <input type="range" min="1" max="250" step="1" ng-model="Map.params.waterLine" ng-change="Map.generate();" value="{{Map.params.waterLine}}" />
             </div>
             <div class="field">
-                <label>Top value: {{Map.top}}</label>
-                <input type="range" min="1" max="255" step="1" ng-model="Map.top" ng-change="Map.generate();" value="{{Map.top}}" />
+                <label>Some random value: {{Map.params.someValue}}</label>
+                <input type="range" min="-16" max="16" step="1" ng-model="Map.params.someValue" ng-change="Map.generate();" value="{{Map.params.someValue}}" />
+            </div>
+            <div class="field">
+                <label>Top value: {{Map.params.top}}</label>
+                <input type="range" min="1" max="255" step="1" ng-model="Map.params.top" ng-change="Map.generate();" value="{{Map.params.top}}" />
             </div>
             <hr>
 
 
             <div class="field">
-                <label>Food threshold: {{Map.foodTolerance}}</label>
-                <input type="range" min="1" max="255" step="1" ng-model="Map.foodTolerance" ng-change="Map.generate();" value="{{Map.foodTolerance}}" />
+                <label>Food threshold: {{Map.params.foodThreshold}}</label>
+                <input type="range" min="1" max="255" step="1" ng-model="Map.params.foodThreshold" ng-change="Map.generate();" value="{{Map.params.foodThreshold}}" />
             </div>
 
             <div class="field">
-                <label>Water threshold:  {{Map.waterTolerance}}</label>
-                <input type="range" min="1" max="255" step="1" ng-model="Map.waterTolerance" ng-change="Map.generate();" value="{{Map.waterTolerance}}" />
+                <label>Water threshold:  {{Map.params.waterThreshold}}</label>
+                <input type="range" min="1" max="255" step="1" ng-model="Map.params.waterThreshold" ng-change="Map.generate();" value="{{Map.params.waterThreshold}}" />
             </div>
 
             <hr>
-            <div class="field">
-                <label><input type="checkbox" ng-model="Map.makeMap" ng-change="Map.generate();" />Toggle map/noise</label>
-            </div>
 
-            <div class="field" style="text-align: center;">
-                <button ng-click="Map.generate();">Generate map</button>
+            <div class="field" style="text-align: left;">
                 <button ng-click="Map.newSeed(); Map.generate();">New Seed</button>
             </div>
-            
+
             <div class="field" style="text-align: center;">
                 <button ng-click="Map.export();" style="margin: 0;     width: calc(100% - 16px);">Export</button>
             </div>
         </div>
 
-        <div id="export-overlay" ng-show="Map.exported">
+        <div id="export-overlay" ng-show="Map.exported" ng-class="{exported: Map.exported}">
             <div class="pixel-overlay"></div>
-            <div class="export-box that-DOSish-look">
-                
+            <div class="fullscreen-content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="export-box that-DOSish-look">
+                                <div class="box-content">
+                                    <h2>Copy and paste it into SimCell import screen</h2>
+                                    <textarea class="that-DOSish-look" id="map-data">{{Map.exportedData}}</textarea>
+                                    <div class="text-center" style="text-align: center;">
+                                        <a ng-click="Map.exported = false" class="btn" style="display: inline-block;margin-top: 30px;">Close</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <script src="noise-map-generator.js" type="text/javascript"></script>
     </body>
 </html>
